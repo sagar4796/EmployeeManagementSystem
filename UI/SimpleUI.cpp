@@ -8,8 +8,9 @@
 #include <string>      // string, getline()
 #include <vector>
 
-#include "Domain/Project/Projects.hpp"    // Include for now - will replace next increment
+#include "Domain/Project/ProjectHandler.hpp"    // Include for now - will replace next increment
 #include "Domain/Session/SessionHandler.hpp"
+#include "Domain/Salary/SalaryHandler.hpp"
 
 #include "TechnicalServices/Logging/LoggerHandler.hpp"
 #include "TechnicalServices/Persistence/PersistenceHandler.hpp"
@@ -21,8 +22,9 @@ namespace UI
 {
   // Default constructor
   SimpleUI::SimpleUI()
-  : _allocateProjectHandler   ( std::make_unique<Domain::Project::Projects>()                     ),   // will replace these with factory calls in the next increment
-    _loggerPtr     ( TechnicalServices::Logging::LoggerHandler::create()            ),
+    : _allocateProject( std::make_unique<Domain::Project::ProjectHandler>() ),    // will replace these with factory calls in the next increment
+      _paySalary( std::make_unique<Domain::Salary::SalaryHandler>() ),
+      _loggerPtr     ( TechnicalServices::Logging::LoggerHandler::create()            ),
     _persistentData( TechnicalServices::Persistence::PersistenceHandler::instance() )
   {
     _logger << "Simple UI being used and has been successfully initialized";
@@ -67,7 +69,7 @@ namespace UI
       do
       {
         for( unsigned i = 0; i != roleLegalValues.size(); ++i )   std::cout << std::setw( 2 ) << i << " - " << roleLegalValues[i] << '\n';
-        std::cout << "  role (0-" << roleLegalValues.size()-1 << "): ";
+        std::cout << "  Select Role: ";
         std::cin  >> menuSelection;
       } while( menuSelection >= roleLegalValues.size() );
 
@@ -100,7 +102,7 @@ namespace UI
         for( unsigned i = 0; i != commands.size(); ++i ) std::cout << std::setw( 2 ) << i << " - " << commands[i] << '\n';
         std::cout << std::setw( 2 ) << commands.size() << " - " << "Quit\n";
 
-        std::cout << "  action (0-" << commands.size() << "): ";
+        std::cout << " Select Action you want to perform: ";
         std::cin >> menuSelection;
       } while( menuSelection > commands.size() );
 
@@ -116,12 +118,53 @@ namespace UI
       **     no coupling. This can be achieved in a variety of ways, but one common way is to pass strings instead of strong typed
       **     parameters.
       ******************************************************************************************************************************/
-      if( selectedCommand == "Allocate Project"){
-        std::vector<std::string> parameters( 3 );
+      if( selectedCommand == "Allocate Project" )
+      {
+        std::array<std::string, 4> projects = _allocateProject->get_projects();
+        unsigned                   projectSelection;
+        do
+        {
+          for( unsigned i = 0; i != projects.size(); ++i ) std::cout << std::setw( 2 ) << i << " - " << projects[i] << '\n';
+          std::cout << "Select Project: ";
+          std::cin >> projectSelection;
 
-        std::cout << " Enter Project name:  ";  std::cin >> std::ws;  std::getline( std::cin, parameters[0] );
-        std::cout << " Enter Employee ID: ";  std::cin >> std::ws;  std::getline( std::cin, parameters[1] );
-        std::cout << " Enter Employee's role in this project:   ";  std::cin >> std::ws;  std::getline( std::cin, parameters[2] );
+        } while( projectSelection > projects.size() );
+            std::string selectedProject = projects[projectSelection];
+        _logger << "Selected Project \"" + selectedProject + '"';
+
+
+
+        std::array<std::string, 4> employees = _allocateProject->get_employee();
+        unsigned                   employeeSelection;
+        do
+        {
+          for( unsigned i = 0; i != employees.size(); ++i ) std::cout << std::setw( 2 ) << i << " - " << employees[i] << '\n';
+          std::cout << "Select Employee: ";
+          std::cin >> employeeSelection;
+
+        } while( employeeSelection > employees.size() );
+         std::string selectedEmployee = employees[employeeSelection];
+        _logger << "Selected Employee \"" + selectedEmployee + '"';
+
+
+
+        std::array<std::string, 4> projectRoles = _allocateProject->get_project_role();
+        unsigned                   projectRoleSelection;
+        do
+        {
+          for( unsigned i = 0; i != projectRoles.size(); ++i ) std::cout << std::setw( 2 ) << i << " - " << projectRoles[i] << '\n';
+          std::cout << "Select Project Role: ";
+          std::cin >> projectRoleSelection;
+
+        } while( employeeSelection > projectRoles.size() );
+          std::string selectedProjectRole = projectRoles[projectRoleSelection];
+        _logger << "Selected Project Role: " + selectedProjectRole + '"';
+
+
+        std::vector<std::string> parameters( 3 );
+        parameters[0] = selectedProject;
+        parameters[1] = selectedEmployee;
+        parameters[2] = selectedProjectRole;
 
         auto results = sessionControl->executeCommand( selectedCommand, parameters );
         if( results.has_value() ) _logger << "Received reply: " + std::any_cast<const std::string &>( results );
@@ -129,10 +172,36 @@ namespace UI
 
       else if (selectedCommand == "Pay Salary")
       {
+
+
+        std::array<std::string, 2> salaryOptions = _paySalary->get_salary_options();
+        unsigned                   salaryOptionSelection;
+        do
+        {
+          for( unsigned i = 0; i != salaryOptions.size(); ++i ) std::cout << std::setw( 2 ) << i << " - " << salaryOptions[i] << '\n';
+          std::cout << "Select Pay Salary Option: ";
+          std::cin >> salaryOptionSelection;
+        } while( salaryOptionSelection > salaryOptions.size() );
+        std::string selectedSalaryOption = salaryOptions[salaryOptionSelection];
+        _logger << "Selected Option  \"" + selectedSalaryOption + '"'; 
+
+
+        std::array<std::string, 4> employees = _allocateProject->get_employee();
+        unsigned                   employeeSelection;
+        do
+        {
+          for( unsigned i = 0; i != employees.size(); ++i ) std::cout << std::setw( 2 ) << i << " - " << employees[i] << '\n';
+          std::cout << "Select Employee: ";
+          std::cin >> employeeSelection;
+
+        } while( employeeSelection > employees.size() );
+            std::string selectedEmployee = employees[employeeSelection];
+        _logger << "Selected Employee \"" + selectedEmployee + '"'; 
+
+
         std::vector<std::string> parameters( 3 );
-        std::cout << " Enter Employee ID:  ";
-        std::cin >> std::ws;
-        std::getline( std::cin, parameters[0] );
+        parameters[0] = selectedEmployee;
+
         std::cout << " Enter Salary: ";
         std::cin >> std::ws;
         std::getline( std::cin, parameters[1] );

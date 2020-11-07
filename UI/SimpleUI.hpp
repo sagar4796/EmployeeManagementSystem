@@ -1,8 +1,18 @@
+/* 
+ CPSC 462 
+ Project : Employee Management System
+ Group : Graduate Group 3
+ Team Members : Sagar Ramani, Nirav Patil, Adit Gandhi, Abhiranjan Singh
+
+*/
+
+
 #pragma once
 
-#include <memory>    // std::unique_ptr
+#include <memory>   
 
-#include "Domain/Project/AllocateProjectHandler.hpp"
+#include "Domain/Project/ProjectHandler.hpp"
+#include "Domain/Salary/SalaryHandler.hpp"
 
 #include "TechnicalServices/Logging/LoggerHandler.hpp"
 #include "TechnicalServices/Persistence/PersistenceHandler.hpp"
@@ -14,38 +24,29 @@
 
 namespace UI
 {
-  /*****************************************************************************
-  ** Simple UI definition
-  **   Simple UI is a console application meant only as a driver to the Domain Layer
-  **   application. This UI will someday be replaced by a more sophisticated, user
-  **   friendly implementation
-  ******************************************************************************/
-  class SimpleUI : public UI::UserInterfaceHandler
+   class SimpleUI : public UI::UserInterfaceHandler
   {
     public:
-      // Constructors
       SimpleUI();
 
 
-      // Operations
       void launch() override;
 
 
-      // Destructor
       ~SimpleUI() noexcept override;
 
 
     private:
-      // These smart pointers hold pointers to lower architectural layer's interfaces
-      std::unique_ptr<Domain::Project::AllocateProjectHandler>                _allocateProjectHandler;
+
+      std::unique_ptr<Domain::Project::ProjectHandler>                _allocateProject;
+
+      std::unique_ptr<Domain::Salary::SalaryHandler>                  _paySalary;
 
 
       std::unique_ptr<TechnicalServices::Logging::LoggerHandler>            _loggerPtr;
       TechnicalServices::Persistence::PersistenceHandler                  & _persistentData;
 
 
-      // convenience reference object enabling standard insertion syntax
-      // This line must be physically after the definition of _loggerPtr
       TechnicalServices::Logging::LoggerHandler                            & _logger = *_loggerPtr;
   };
-} // namespace UI
+} 

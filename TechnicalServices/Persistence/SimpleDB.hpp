@@ -1,6 +1,14 @@
+/* 
+ CPSC 462 
+ Project : Employee Management System
+ Group : Graduate Group 3
+ Team Members : Sagar Ramani, Nirav Patil, Adit Gandhi, Abhiranjan Singh
+
+*/
+
 #pragma once
 
-#include <memory>    // unique_ptr
+#include <memory>  
 #include <string>
 #include <vector>
 
@@ -15,15 +23,13 @@ namespace TechnicalServices::Persistence
   class SimpleDB : public TechnicalServices::Persistence::PersistenceHandler
   {
     public:
-      using PersistenceHandler::PersistenceHandler;    // inherit constructors
+      using PersistenceHandler::PersistenceHandler;   
       SimpleDB();
 
 
-      // Operations
-      std::vector<std::string> findRoles()                                       override;  // Returns list of all legal roles
-      UserCredentials          findCredentialsByName( const std::string & name ) override;  // Returns credentials for specified user, throws NoSuchUser if user not found
+      std::vector<std::string> findRoles()                                       override;  
+      UserCredentials          findCredentialsByName( const std::string & name ) override; 
 
-      // Adaptation Data read only access.  Adaptation data is a Key/Value pair
       const std::string & operator[]( const std::string & key ) const override;
 
 
@@ -32,14 +38,11 @@ namespace TechnicalServices::Persistence
     private:
       std::unique_ptr<TechnicalServices::Logging::LoggerHandler> _loggerPtr;
 
-      // convenience reference object enabling standard insertion syntax
-      // This line must be physically after the definition of _loggerPtr
       TechnicalServices::Logging::LoggerHandler & _logger = *_loggerPtr;
 
 
-      // Property data (Key/Value pairs) off-line modifiable by the end-user
       using AdaptationData = std::map<std::string /*Key*/, std::string /*Value*/>;
       AdaptationData _adaptablePairs;
 
-  }; // class SimpleDB
-}  // namespace TechnicalServices::Persistence
+  }; 
+}  

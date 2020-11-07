@@ -1,3 +1,12 @@
+/* 
+ CPSC 462 
+ Project : Employee Management System
+ Group : Graduate Group 3
+ Team Members : Sagar Ramani, Nirav Patil, Adit Gandhi, Abhiranjan Singh
+
+*/
+
+
 #pragma once
 
 #include <iostream>
@@ -12,19 +21,19 @@ namespace TechnicalServices::Logging
   class SimpleLogger : public TechnicalServices::Logging::LoggerHandler
   {
     public:
-      //Constructors
+      
       SimpleLogger( std::ostream & loggingStream = std::clog);
 
-      // Operations
+      
       SimpleLogger & operator<< ( const std::string & message ) override;
 
-      // Destructor
+      
       ~SimpleLogger() noexcept override;
 
     
     protected:
       std::ostream & _loggingStream;
-  }; // class SimpleLogger
+  }; 
 
 
 
@@ -37,13 +46,8 @@ namespace TechnicalServices::Logging
   inline SimpleLogger::SimpleLogger( std::ostream & loggingStream )
     : _loggingStream( loggingStream )
   {
-    // Let's set the buffering behavior of the stream so the order and context of inserted information is preserved. Force the
-    // buffer to be flushed after each insertion. One normally doesn't want to do this, but log files are very often viewed in real
-    // time as the program executes (e.g. tailing a file).  Waiting for the buffer to fill before seeing the contents may give false
-    // information in such cases.
     _loggingStream << std::unitbuf;
 
-    // call operator<< so the time stamp and newline get inserted too
     *this << "Simple Logger being used and has been successfully initialized";
   }
 
@@ -65,4 +69,4 @@ namespace TechnicalServices::Logging
     return *this;
   }
 
-} // namespace TechnicalServices::Logging
+} 
